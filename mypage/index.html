@@ -22,6 +22,7 @@ p{font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;color:#1B2
   var q = new URLSearchParams(location.search), out = new URLSearchParams();
   allow.forEach(function (n) { if (q.has(n)) out.set(n, q.get(n)); });
   if (q.has('code') || q.has('error')) { out.set('w', '1'); history.replaceState(null, '', location.pathname); } /* w=1：入れ物から来た合図（LINE とのやりとりで戻り先をそろえるため）。使い終わった合図を住所の欄から消す */
+  if (q.has('r')) document.title = 'NOVARE｜カルテ'; /* カルテの画面のときは題名をカルテに */
   var f = document.createElement('iframe');
   f.src = EXEC + (out.toString() ? '?' + out.toString() : '');
   f.title = 'NOVARE マイページ';
