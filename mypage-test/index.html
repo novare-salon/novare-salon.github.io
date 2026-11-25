@@ -15,13 +15,18 @@ p{font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;color:#1B2
 <body>
 <script>
 /* NOVARE マイページの入れ物（test）。Google の「Apps Script のユーザーによって作成…」の帯を出さないため、マイページをこの中に入れて見せる。
-   受け取った合図（k / s / r / code / state / error など）を、そのままマイページに渡すだけ。ここでは何も残さない。 */
+   受け取った合図（k / r / code / state / error など）を、そのままマイページに渡すだけ。ここでは何も残さない。 */
 (function () {
   var EXEC = 'https://script.google.com/macros/s/AKfycbydM66_qaVXXOlo6uoW8nuvDDuzZw5bq0i5-OUzu8aYoBHJ6hL-Fb-wMU2xJY9Zk1-J/exec';
-  var allow = ['k','s','r','from','style','code','state','error','error_description'];
-  var q = new URLSearchParams(location.search), out = new URLSearchParams();
+  /* 鍵（k）は # のうしろで受け取る。# のうしろは、ページを置いている GitHub には送られない。前に配った ?k= のリンクも開ける（住所の欄はすぐ # に書きかえる）。美容師の鍵（s）は受け取らない */
+  var allow = ['r','from','style','code','state','error','error_description'];
+  var q = new URLSearchParams(location.search), h = new URLSearchParams(location.hash.slice(1)), out = new URLSearchParams();
   allow.forEach(function (n) { if (q.has(n)) out.set(n, q.get(n)); });
+  var k = h.get('k') || q.get('k');
   if (q.has('code') || q.has('error')) { out.set('w', '1'); history.replaceState(null, '', location.pathname); } /* w=1：入れ物から来た合図（LINE とのやりとりで戻り先をそろえるため）。使い終わった合図を住所の欄から消す */
+  else if (k) { out.set('k', k); history.replaceState(null, '', location.pathname + '#k=' + encodeURIComponent(k)); }
+  window.addEventListener('hashchange', function () { location.reload(); });
+  if (q.has('r')) document.title = 'NOVARE｜カルテ'; /* カルテの画面のときは題名をカルテに */
   var f = document.createElement('iframe');
   f.src = EXEC + (out.toString() ? '?' + out.toString() : '');
   f.title = 'NOVARE マイページ';
